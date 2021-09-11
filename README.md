@@ -12,8 +12,8 @@ You are encouraged to host your code in private repositories on [GitHub](https:/
 
 ## TODO
 
-    ###########################################################
-    ##                                                       ##
-    ## REPLACE CONTENT OF THIS FILE WITH YOUR PROJECT REPORT ##
-    ##                                                       ##
-    ###########################################################
+    -Had some trouble figuring out how to recieve accio in pieces.
+    
+    -It is confusing to send the file in chunks, will have to do more research
+    
+    -Having problems with the sent file missing the first 4 lines.
