@@ -19,9 +19,14 @@ except:
     sys.stderr.write("ERROR: Not able to connect to the provided host and port.\n")
     exit(1)
 
-while(not("accio\r\n" in in_message)):
-    recieved = soc.recv(1024)
-    in_message = in_message + recieved.decode('utf-8')
+try:
+    while(not("accio\r\n" in in_message)):
+        recieved = soc.recv(1024)
+        in_message = in_message + recieved.decode('utf-8')
+except:
+    sys.stderr.write("ERROR: Connection disconnected while waiting for accio.\n")
+    soc.close()
+    exit(1)
 
 read_pointer = 0
 f = open(FILE, 'rb')
