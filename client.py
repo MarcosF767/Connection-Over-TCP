@@ -17,7 +17,6 @@ try:
     soc.connect((HOST, int(PORT)))
 except:
     sys.stderr.write("ERROR: Not able to connect to the provided host and port.\n")
-    soc.close()
     exit(1)
 
 while(not("accio\r\n" in in_message)):
