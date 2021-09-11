@@ -9,6 +9,7 @@ PORT = sys.argv[2]
 FILE = sys.argv[3]
 
 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+soc.settimeout(10)
 
 in_message = ""
 
