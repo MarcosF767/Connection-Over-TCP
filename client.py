@@ -2,5 +2,12 @@
 
 import sys
 
-if __name__ == '__main__':
-    sys.stderr.write("client is not implemented yet\n")
+HOST = sys.argv[1]
+PORT = sys.argv[2]
+FILE = sys.argv[3]
+
+soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+soc.connect((HOST, PORT))
+
+soc.close()
