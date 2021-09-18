@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 #Server
-import socket
 import selectors
+import socket
 import signal
+import time
 import sys
 
 
@@ -16,6 +17,9 @@ class Client:
         self.addr = addr
         self.inb = b""
         self.outb = b""
+        self.last_active = time.time()
+    def setTime(self, new_time):
+        self.last_active = new_time
         
 def accept(key):
     sock = key.fileobj
@@ -29,7 +33,12 @@ def accept(key):
 def service(key, event):
     sock = key.fileobj
     data = key.data
-    #print("here 2 ")
+    
+    if(time.time() - data.last_active > 10):
+        sys.stderr.write("ERROR: The connection has timed out.")
+        selector.unregister(sock)
+        sock.close()
+
     if event & selectors.EVENT_READ:
         try:
             recieved_data = sock.recv(4096)
@@ -37,6 +46,7 @@ def service(key, event):
             sys.stderr.write("ERROR: The connection has timed out.")
             
         if recieved_data:
+            data.setTime(time.time())
             data.inb += recieved_data
         else:
             index = data.inb.find(b'\r\n\r\n')
@@ -45,6 +55,7 @@ def service(key, event):
             sock.close()
     if event & selectors.EVENT_WRITE:
         if data.outb:
+            data.setTime(time.time())
             sent = sock.send(data.outb)
             data.outb = b''
 
