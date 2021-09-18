@@ -35,7 +35,7 @@ def service(key, event):
         if recieved_data:
             data.inb += recieved_data
         else:
-            print(len(data.inb))
+            print(len(data.inb.encode('utf-8')))
             selector.unregister(sock)
             sock.close()
     if event & selectors.EVENT_WRITE:
