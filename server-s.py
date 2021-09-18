@@ -18,7 +18,7 @@ class Client:
         self.outb = b""
         
 def accept(key):
-    print("here 1 ")
+    #print("here 1 ")
     sock = key.fileobj
     connection, address = sock.accept()
     connection.setblocking(False)
@@ -38,7 +38,7 @@ def service(key, event):
         recieved_data = sock.recv(4096)
         if recieved_data:
             data.inb += recieved_data
-            print(data.inb.decode('utf-8'))
+            print(len(data.inb))
         else:
             print('closing connection to', data.addr)
             selector.unregister(sock)
