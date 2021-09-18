@@ -39,7 +39,8 @@ def service(key, event):
         if recieved_data:
             data.inb += recieved_data
         else:
-            print(len(data.inb))
+            index = data.inb.find(b'\r\n\r\n')
+            print(len(data.inb[index+4:]))
             selector.unregister(sock)
             sock.close()
     if event & selectors.EVENT_WRITE:
