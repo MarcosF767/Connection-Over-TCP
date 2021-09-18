@@ -31,11 +31,15 @@ def service(key, event):
     data = key.data
     #print("here 2 ")
     if event & selectors.EVENT_READ:
-        recieved_data = sock.recv(4096)
+        try:
+            recieved_data = sock.recv(4096)
+        except TimeoutError:
+            print("ERROR: The connection has timed out.")
+            
         if recieved_data:
             data.inb += recieved_data
         else:
-            print(len(data.inb.decode('utf-8')))
+            print(len(data.inb))
             selector.unregister(sock)
             sock.close()
     if event & selectors.EVENT_WRITE:
