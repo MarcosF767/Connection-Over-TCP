@@ -48,7 +48,7 @@ def service(key, event):
             sent = sock.send(data.outb)
             data.outb = data.outb[sent:]
 
-PORT = sys.argv[1]
+PORT = int(sys.argv[1])
 HOST = '0.0.0.0'
 
 not_stopped = True
