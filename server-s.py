@@ -4,6 +4,7 @@
 import socket
 import selectors
 import signal
+import sys
 
 
 def handler(signum, frame):
