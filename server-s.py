@@ -22,6 +22,7 @@ def accept(key):
     sock = key.fileobj
     connection, address = sock.accept()
     connection.setblocking(False)
+    connection.settimeout(10)
     #rsp = sock.send(b"accio\r\n")
     data = Client(address)
     data.outb = b'accio\r\n'
