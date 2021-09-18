@@ -1,61 +1,89 @@
 #!/usr/bin/env python3
 
-import selectors
+#Server
 import socket
+import selectors
+import signal
+import sys
 
-class ClientData:
+
+def handler(signum, frame):
+    sys.stderr.write('Signal handler called with signal', signum)
+    exit(1)
+
+class Client:
     def __init__(self, addr):
         self.addr = addr
-        self.inb = b'' # input buffer
-        self.outb = b'' # output buffer
+        self.inb = b""
+        self.outb = b""
         
-def acceptConnection(sock):
-    conn, addr = sock.accept()  # Should be ready to read
-    print('accepted connection from', addr)
-    conn.setblocking(False)
-    data = ClientData(addr)
+def accept(key):
+    print("here 1 ")
+    sock = key.fileobj
+    connection, address = sock.accept()
+    connection.setblocking(False)
+    #rsp = sock.send(b"accio\r\n")
+    data = Client(address)
+    data.outb = b'accio\r\n'
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
-    sel.register(conn, events, data=data)
-
-def serviceConnection(key, mask):
+    selector.register(connection, events, data=data)
+    
+def service(key, event):
     sock = key.fileobj
     data = key.data
-    if mask & selectors.EVENT_READ:
-        recv_data = sock.recv(1024)  # Should be ready to read
-        if recv_data:
-            data.outb += recv_data
+    #print("here 2 ")
+    if event & selectors.EVENT_READ:
+        #print('-----------HERE service Read-------------')
+        recieved_data = sock.recv(4096)
+        if recieved_data:
+            data.inb += recieved_data
+            print(data.inb.decode('utf-8'))
         else:
             print('closing connection to', data.addr)
-            sel.unregister(sock)
+            selector.unregister(sock)
             sock.close()
-            if mask & selectors.EVENT_WRITE:
-                if data.outb:
-                    print('echoing', repr(data.outb), 'to', data.addr)
-                    sent = sock.send(data.outb)  # Should be ready to write
-                    data.outb = data.outb[sent:]
+    if event & selectors.EVENT_WRITE:
+        #print('-----------HERE service Write-------------')
+        if data.outb:
+            sent = sock.send(data.outb)
+            data.outb = data.outb[sent:]
+
+PORT = sys.argv[1]
+HOST = '0.0.0.0'
+
+not_stopped = True
+
+signal.signal(signal.SIGQUIT, handler)
+signal.signal(signal.SIGTERM, handler)
+signal.signal(signal.SIGINT, handler)
 
 
-HOST = '0.0.0.0'  # The server's hostname or IP address
-PORT =  7777        # The port used by the server
+soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #crates socket
+soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #in case socket is already open
+soc.settimeout(10)
 
-lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-lsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-lsock.bind((HOST, PORT))
-lsock.listen(10)
-lsock.setblocking(False)
+try:
+    soc.bind((HOST, PORT)) #binds socket
+except:
+    sys.stderr.write("ERROR: Port number not available.\n")
+    exit(1)
 
-sel = selectors.DefaultSelector()
-sel.register(lsock, selectors.EVENT_READ, data=None)
+soc.listen(20)
+soc.setblocking(False)
 
-print('listening on', lsock.getsockname())
-while True:
-    print("--------------HERE 5-------------------")
-    events = sel.select(timeout=None)
-    for key, mask in events:
+selector = selectors.DefaultSelector()
+selector.register(soc, selectors.EVENT_READ, data=None)
+
+while not_stopped:
+    #print("--------------HERE loop-------------------")
+    events = selector.select(timeout = 10)
+    for key, event in events:
         if key.data is None:
-            acceptConnection(key.fileobj)
+            #print("--------------HERE 5-------------------")
+            accept(key)
         else:
-            serviceConnection(key, mask)
-
-                
+            #print("--------------HERE 6-------------------")
+            service(key, event)
+            
+soc.close()
 
