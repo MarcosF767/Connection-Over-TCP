@@ -34,7 +34,7 @@ def service(key, event):
         try:
             recieved_data = sock.recv(4096)
         except TimeoutError:
-            print("ERROR: The connection has timed out.")
+            sys.stderr.write("ERROR: The connection has timed out.")
             
         if recieved_data:
             data.inb += recieved_data
