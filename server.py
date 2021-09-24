@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from _thread import *
 import threading
 
 import socket
@@ -77,6 +76,6 @@ while True:
     
     thread_lock.acquire()
     
-    start_new_thread(thread_client, (client, connection_id))
+    threading.Thread(target=thread_client, args=(client, connection_id)).start()
 
 soc.close()
