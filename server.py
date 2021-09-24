@@ -5,7 +5,6 @@ import threading
 
 import socket
 import signal
-import time
 import sys
 
 PORT = int(sys.argv[1])
@@ -23,30 +22,29 @@ signal.signal(signal.SIGINT, handler)
 thread_lock = threading.Lock()
 
 def thread_client(client, connection_id):
-    time_started = time.time()
-    complete_message = ''
+    complete_message = b''
     
     while True:
-        if(time.time() - time_started > 10):
+        
+        try:
+            data = client.recv(4096)
+        except:
             #put error into file
             sys.stderr.write("ERROR: The connection has timed out.")
+            client.close()
             thread_lock.release()
             break
-        
-        data = client.recv(4096)
         
         if not data:
             #put data into the file
             thread_lock.release()
             break
             
-        time_started = time.time()
         complete_message += data
         
 
 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #crates socket
 soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #in case socket is already open
-#soc.settimeout(10)
 
 try:
     soc.bind((HOST, PORT)) #binds socket
@@ -62,7 +60,8 @@ connection_id = 0
 while True:
     
     client, address = soc.accept()
-    
+    client.settimeout(10)
+
     connection_id += 1
     
     thread_lock.acquire()

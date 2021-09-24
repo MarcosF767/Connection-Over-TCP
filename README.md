@@ -19,3 +19,5 @@ You are encouraged to host your code in private repositories on [GitHub](https:/
     -Having problems with the sent file missing the first 4 lines.
 
     -Server not timing out correctly after 10 seconds
+
+    -Problem handling timeout in the case of threads
