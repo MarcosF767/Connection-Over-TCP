@@ -18,7 +18,7 @@ signal.signal(signal.SIGQUIT, handler)
 signal.signal(signal.SIGTERM, handler)
 signal.signal(signal.SIGINT, handler)
 
-thread_lock = threading.Lock()
+#thread_lock = threading.Lock()
 
 def thread_client(client, connection_id):
     complete_message = b''
@@ -34,7 +34,7 @@ def thread_client(client, connection_id):
             file.close()
             
             client.close()
-            thread_lock.release()
+            #thread_lock.release()
             break
         
         if not data:
@@ -44,7 +44,7 @@ def thread_client(client, connection_id):
             file.write(complete_message[index+4:])
             file.close()
             
-            thread_lock.release()
+            #thread_lock.release()
             break
             
         complete_message += data
@@ -74,7 +74,7 @@ while True:
     
     connection_id += 1
     
-    thread_lock.acquire()
+    #thread_lock.acquire()
     
     threading.Thread(target=thread_client, args=(client, connection_id)).start()
 
