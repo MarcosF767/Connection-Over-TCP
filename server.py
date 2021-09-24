@@ -30,7 +30,7 @@ def thread_client(client, connection_id):
             
             file_name = "." + PATH + "/" + str(connection_id) + ".file"
             file = open(file_name, 'wb')
-            file.write(b"ERROR: The connection timed out.")
+            file.write(b"ERROR")
             file.close()
             
             client.close()
