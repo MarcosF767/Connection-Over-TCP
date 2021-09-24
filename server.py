@@ -53,7 +53,7 @@ def thread_client(client, connection_id):
 
 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #crates socket
 soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #in case socket is already open
-soc.settimeout(10)
+#soc.settimeout(10)
 
 try:
     soc.bind((HOST, PORT)) #binds socket
