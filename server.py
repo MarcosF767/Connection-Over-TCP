@@ -70,6 +70,8 @@ while True:
     
     client, address = soc.accept()
     client.settimeout(10)
+
+    client.send(b'accio\r\n')
     
     connection_id += 1
     
