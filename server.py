@@ -28,7 +28,7 @@ def thread_client(client, connection_id):
             data = client.recv(4096)
         except:
             
-            file_name = "." + PATH + "/" + str(connection_id) + ".file"
+            file_name = PATH + "/" + str(connection_id) + ".file"
             file = open(file_name, 'wb')
             file.write(b"ERROR")
             file.close()
@@ -38,7 +38,7 @@ def thread_client(client, connection_id):
             break
         
         if not data:
-            file_name = "." + PATH + "/" + str(connection_id) + ".file"
+            file_name = PATH + "/" + str(connection_id) + ".file"
             file = open(file_name, 'wb')
             index = complete_message.find(b'\r\n\r\n')
             file.write(complete_message[index+4:])
