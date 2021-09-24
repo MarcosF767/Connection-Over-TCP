@@ -60,7 +60,7 @@ except:
     sys.stderr.write("ERROR: Port number not available.\n")
     exit(1)
     
-soc.listen(10)
+soc.listen(15)
 #soc.setblocking(False)
 
 connection_id = 0
