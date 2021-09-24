@@ -25,18 +25,26 @@ def thread_client(client, connection_id):
     complete_message = b''
     
     while True:
-        
         try:
             data = client.recv(4096)
         except:
-            #put error into file
-            sys.stderr.write("ERROR: The connection has timed out.")
+            
+            file_name = "." + PATH + "/" + str(connection_id) + ".file"
+            file = open(file_name, 'wb')
+            file.write(b"ERROR: The connection timed out.")
+            file.close()
+            
             client.close()
             thread_lock.release()
             break
         
         if not data:
-            #put data into the file
+            file_name = "." + PATH + "/" + str(connection_id) + ".file"
+            file = open(file_name, 'wb')
+            index = complete_message.find(b'\r\n\r\n')
+            file.write(complete_message[index+4:])
+            file.close()
+            
             thread_lock.release()
             break
             
@@ -45,6 +53,7 @@ def thread_client(client, connection_id):
 
 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #crates socket
 soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #in case socket is already open
+
 
 try:
     soc.bind((HOST, PORT)) #binds socket
@@ -61,7 +70,7 @@ while True:
     
     client, address = soc.accept()
     client.settimeout(10)
-
+    
     connection_id += 1
     
     thread_lock.acquire()
